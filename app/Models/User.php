@@ -11,7 +11,7 @@ use Laravel\Sanctum\HasApiTokens;
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
-
+    // protected $table = 'nomeTabella'   qualora il nome della tab sia diverso da quello della classe
     /**
      * The attributes that are mass assignable.
      *
