@@ -20,7 +20,7 @@ class AlbumFactory extends Factory
         $user = User::inRandomOrder()->first();
         return [
             'user_id' => User::factory(),
-            'album_name' => $this->faker->text(20),
+            'album_name' => $this->faker->text(60),
             'album_thumb' => $this->faker->image(),
             'description' => $this->faker->text(120),
             'created_at' => $this->faker->dateTime(),

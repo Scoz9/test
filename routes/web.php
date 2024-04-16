@@ -23,11 +23,17 @@ Route::get('/', function () {
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
-Route::get('/albums', function () {
+/*Route::get('/albums', function () {
     return  Album::paginate(5);
 });
 Route::get('/users', function () {
     return  User::get();
+});*/
+Route::get('/users', function () {
+    return  User::with('albums')->paginate(80);
+});
+Route::get('/albums', function () {
+    return  Album::with('photos')->paginate(80);
 });
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

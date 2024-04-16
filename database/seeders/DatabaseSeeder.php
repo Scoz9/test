@@ -3,6 +3,9 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Album;
+use App\Models\Photo;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -18,6 +21,13 @@ class DatabaseSeeder extends Seeder
         //     'name' => 'Test User',
         //     'email' => 'test@example.com',
         // ]);
-        $this->call(UserSeeder::class);
+        //$this->call(UserSeeder::class);
+        //$this->call(AlbumSeeder::class);
+        //$this->call(PhotoSeeder::class);
+        User::factory(20)->has(
+            Album::factory(10)->has(
+                Photo::factory(20)
+            )
+        )->create();
     }
 }

@@ -17,3 +17,10 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+/.settings
+/.project
+/.buildpath
+.php-cs-fixer.cache
+nbproject
+composer.lock
+docs/html
