@@ -69,7 +69,10 @@ class AlbumsController extends Controller
      */
     public function update(Request $request, Album $album)
     {
-        //
+        $data = $request->only(['album_name','description']);
+        $data['id'] = $album->id;
+        $sql = 'UPDATE albums set album_name=:album_name, description=:description where id=:id';
+        $res = Db::update($sql, $data);
     }
 
     /**

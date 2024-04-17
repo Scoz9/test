@@ -23,30 +23,32 @@
         document.addEventListener("DOMContentLoaded", function() {
             let ul_album_list = document.querySelector('#ul-album-list');
             ul_album_list.addEventListener("click", async function (evt) {
-                evt.preventDefault();
-                let url_album = evt.target.getAttribute('href');
-                let li = evt.target.parentNode;
-                let token = document.querySelector("#_token").value;
-                try {
-                    const response = await fetch(url_album, {
-                        method: 'DELETE',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': token
+                if (evt.target.classList.contains("btn-danger")) {
+                    evt.preventDefault();
+                    let url_album = evt.target.getAttribute('href');
+                    let li = evt.target.parentNode.parentNode;
+                    let token = document.querySelector("#_token").value;
+                    try {
+                        const response = await fetch(url_album, {
+                            method: 'DELETE',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': token
+                            }
+                        });
+                        if(!response.ok) {
+                            throw new Error("Errore nella richiesta: " + response.status);
                         }
-                    });
-                    if(!response.ok) {
-                        throw new Error("Errore nella richiesta: " + response.status);
+                        const data = await response.text();
+                        if(data == 1) {
+                            li.parentNode.removeChild(li);
+                        } else {
+                            alert('Problem contacting server')
+                        }
+                        console.log("Risposta ricevuta: ", data)
+                    } catch(error) {
+                        console.log("Si e' verificato un errore: ", error);
                     }
-                    const data = await response.text();
-                    if(data == 1) {
-                        li.parentNode.removeChild(li);
-                    } else {
-                        alert('Problem contacting server')
-                    }
-                    console.log("Risposta ricevuta: ", data)
-                } catch(error) {
-                    console.log("Si e' verificato un errore: ", error);
                 }
             })
         });
