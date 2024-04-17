@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AlbumsController;
 use App\Http\Controllers\ProfileController;
 use App\Models\Album;
 use App\Models\User;
@@ -30,7 +31,10 @@ Route::get('/albums', function () {
     return  Album::with('photos')->paginate(80);
 });
 */
-Route::get('/users', [\App\Http\Controllers\AlbumsController::class, 'index']);
+Route::resource('/albums', AlbumsController::class);
+Route::delete('/albums/{album}', [AlbumsController::class, 'delete']);
+Route::get('/albums/{album}', [AlbumsController::class, 'show']);
+Route::get('/users', [AlbumsController::class, 'index']);
 /*
 Route::get('/users', function () {
     return  User::get();

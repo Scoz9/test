@@ -24,7 +24,9 @@ class AlbumsController extends Controller
             $where['album_name'] = $request->get('album_name');
             $sql .= " AND album_name=:album_name";
         }
-        return DB::select($sql, $where);
+        $sql .= " LIMIT 5";
+        $albums = DB::select($sql, $where);
+        return view('templates.albums', ['albums' => $albums]);
     }
 
     /**
@@ -46,9 +48,10 @@ class AlbumsController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Album $album)
+    public function show(int $album)
     {
-        //
+        $sql = 'select * FROM albums where id=:id';
+        return DB::select($sql, ['id' => $album]);
     }
 
     /**
@@ -73,5 +76,11 @@ class AlbumsController extends Controller
     public function destroy(Album $album)
     {
         //
+    }
+
+    public function delete(int $album)
+    {
+        $sql = 'DELETE FROM albums WHERE id=:id';
+        return DB::delete($sql, ['id' => $album]);
     }
 }
