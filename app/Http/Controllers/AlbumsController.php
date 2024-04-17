@@ -26,7 +26,7 @@ class AlbumsController extends Controller
         }
         $sql .= " LIMIT 5";
         $albums = DB::select($sql, $where);
-        return view('templates.albums', ['albums' => $albums]);
+        return view('albums.albums', ['albums' => $albums]);
     }
 
     /**
@@ -59,7 +59,9 @@ class AlbumsController extends Controller
      */
     public function edit(Album $album)
     {
-        //
+        $sql = 'select * from albums where id=:id';
+        $albumEdit = Db::select($sql, ['id' => $album->id]);
+        return view('albums.editalbum', ['album'=>$albumEdit[0]]);
     }
 
     /**

@@ -7,8 +7,12 @@
                 @foreach($albums as $album)
                     <li class="list-group-item d-flex justify-content-between">
                         <p> {{$album -> album_name}}</p>
-                        <a href="/albums/{{$album->id}}" class="btn btn-danger"> DELETE </a>
+                        <div>
+                            <a href="/albums/{{$album->id}}/edit " class="btn btn-primary"> UPDATE </a>
+                            <a href="/albums/{{$album->id}}" class="btn btn-danger"> DELETE </a>
+                        </div>
                     </li>
+
                 @endforeach
             </ul>
         </form>
@@ -17,7 +21,6 @@
     @parent
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            console.log("Il documento è pronto!");
             let ul_album_list = document.querySelector('#ul-album-list');
             ul_album_list.addEventListener("click", async function (evt) {
                 evt.preventDefault();
@@ -32,7 +35,6 @@
                             'X-CSRF-TOKEN': token
                         }
                     });
-                    console.log(response);
                     if(!response.ok) {
                         throw new Error("Errore nella richiesta: " + response.status);
                     }
