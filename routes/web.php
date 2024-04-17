@@ -26,15 +26,19 @@ Route::get('/dashboard', function () {
 /*Route::get('/albums', function () {
     return  Album::paginate(5);
 });
-Route::get('/users', function () {
-    return  User::get();
-});*/
-Route::get('/users', function () {
-    return  User::with('albums')->paginate(80);
-});
 Route::get('/albums', function () {
     return  Album::with('photos')->paginate(80);
 });
+*/
+Route::get('/users', [\App\Http\Controllers\AlbumsController::class, 'index']);
+/*
+Route::get('/users', function () {
+    return  User::get();
+});
+Route::get('/users', function () {
+    return  User::with('albums')->paginate(80);
+});
+*/
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
