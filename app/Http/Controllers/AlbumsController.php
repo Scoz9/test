@@ -61,10 +61,14 @@ class AlbumsController extends Controller
         $res = DB::insert($query, $data); */
 
         // Query Builder
-        $queryBuilder = DB::table('albums')->insert($data);
+        // $queryBuilder = DB::table('albums')->insert($data);
+
+        // Eloquent Model
+        // $eloquent = Album::insert($data);
+        $eloquent = Album::create($data);
 
         $message = 'Album ' . $data['album_name'];
-        $message .= $queryBuilder ? ' created' : ' not created';
+        $message .= $eloquent ? ' created' : ' not created';
         session()->flash('message', $message);
 
         return redirect()->route('albums.index');
@@ -73,10 +77,14 @@ class AlbumsController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(int $album)
+    public function show(Album $album)
     {
-        $sql = 'select * FROM albums where id=:id';
-        return DB::select($sql, ['id' => $album]);
+        // Raw Query
+        // $sql = 'select * FROM albums where id=:id';
+        // return DB::select($sql, ['id' => $album]);
+
+        // Eloquent Model
+        return $album;
     }
 
     /**
@@ -84,9 +92,12 @@ class AlbumsController extends Controller
      */
     public function edit(Album $album)
     {
-        $sql = 'select * from albums where id=:id';
-        $albumEdit = Db::select($sql, ['id' => $album->id]);
-        return view('albums.editalbum', ['album' => $albumEdit[0]]);
+        // Raw Query
+        // $sql = 'select * from albums where id=:id';
+        // $albumEdit = Db::select($sql, ['id' => $album->id]);
+        // return view('albums.editalbum', ['album' => $albumEdit[0]]);
+
+        return view('albums.editalbum', ['album' => $album]);
     }
 
     /**
@@ -102,10 +113,14 @@ class AlbumsController extends Controller
         $res = Db::update($sql, $data);*/
 
         // Query Builder
-        $queryBuilder = DB::table('albums')->where('id', '=', $album->id)->update($data);
+        // $queryBuilder = DB::table('albums')->where('id', '=', $album->id)->update($data);
+
+        // Eloquent Model
+        // $eloquent = Album::where('id', '=', $album->id)->update($data);
+        $eloquent = $album->update($data);
 
         $message = 'Album ' . $album->id;
-        $message .= $queryBuilder ? ' updated' : ' not updated';
+        $message .= $album ? ' updated' : ' not updated';
         session()->flash('message', $message);
 
         return redirect()->route('albums.index');
@@ -119,8 +134,12 @@ class AlbumsController extends Controller
         // Query Builder
         // Method 1: $queryBuilder = DB::table('albums')->delete($album);
         // Method 2: $queryBuilder = DB::table('albums')->whereId($id)->delete();
-        $queryBuilder = DB::table('albums')->where('id', '=', $album)->delete();
-        return $queryBuilder;
+        // Method 3: $queryBuilder = DB::table('albums')->where('id', '=', $album)->delete();
+        // return $queryBuilder;
+
+        // Eloquent Model
+        // Album::findOrFail($album)->delete();
+        return Album::destroy($album);
     }
 
     public function delete(int $album)
