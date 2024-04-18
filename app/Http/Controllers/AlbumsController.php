@@ -13,8 +13,8 @@ class AlbumsController extends Controller
      */
     public function index(Request $request)
     {
-        //Query with signpost
-        $sql = 'select * FROM albums WHERE 1 = 1';
+        //Raw Query
+        /* $sql = 'select * FROM albums WHERE 1 = 1';
         $where = [];
         if ($request->has('id')) {
             $where['id'] = $request->get('id');
@@ -25,7 +25,17 @@ class AlbumsController extends Controller
             $sql .= " AND album_name=:album_name";
         }
         $sql .= " ORDER BY id DESC";
-        $albums = DB::select($sql, $where);
+        $albums = DB::select($sql, $where);*/
+
+        //Query Builder
+        $queryBuilder = DB::table('albums')->orderBy('id', 'DESC');
+        if ($request->has('id')) {
+            $queryBuilder->where('id', '=', $request->input('id'));
+        }
+        if ($request->has('album_name')) {
+            $queryBuilder->where('album_name', 'like', '%' . $request->input('album_name') . '%');
+        }
+        $albums = $queryBuilder->get();
         return view('albums.albums', ['albums' => $albums]);
     }
 
@@ -45,10 +55,16 @@ class AlbumsController extends Controller
         $data = $request->only(['album_name', 'description']);
         $data['user_id'] = 1;
         $data['album_thumb'] = '';
-        $query = 'INSERT INTO albums (album_name, description, user_id, album_thumb) values (:album_name, :description, :user_id, :album_thumb)';
-        $res = DB::insert($query, $data);
+
+        // Raw Query
+        /* $query = 'INSERT INTO albums (album_name, description, user_id, album_thumb) values (:album_name, :description, :user_id, :album_thumb)';
+        $res = DB::insert($query, $data); */
+
+        // Query Builder
+        $queryBuilder = DB::table('albums')->insert($data);
+
         $message = 'Album ' . $data['album_name'];
-        $message .= $res ? ' created' : ' not created';
+        $message .= $queryBuilder ? ' created' : ' not created';
         session()->flash('message', $message);
 
         return redirect()->route('albums.index');
@@ -79,11 +95,17 @@ class AlbumsController extends Controller
     public function update(Request $request, Album $album)
     {
         $data = $request->only(['album_name', 'description']);
-        $data['id'] = $album->id;
+
+        //Raw Query
+        /* $data['id'] = $album->id;
         $sql = 'UPDATE albums set album_name=:album_name, description=:description where id=:id';
-        $res = Db::update($sql, $data);
+        $res = Db::update($sql, $data);*/
+
+        // Query Builder
+        $queryBuilder = DB::table('albums')->where('id', '=', $album->id)->update($data);
+
         $message = 'Album ' . $album->id;
-        $message .= $res ? ' updated' : ' not updated';
+        $message .= $queryBuilder ? ' updated' : ' not updated';
         session()->flash('message', $message);
 
         return redirect()->route('albums.index');
@@ -92,14 +114,20 @@ class AlbumsController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Album $album)
+    public function destroy(int $album)
     {
-        //
+        // Query Builder
+        // Method 1: $queryBuilder = DB::table('albums')->delete($album);
+        // Method 2: $queryBuilder = DB::table('albums')->whereId($id)->delete();
+        $queryBuilder = DB::table('albums')->where('id', '=', $album)->delete();
+        return $queryBuilder;
     }
 
     public function delete(int $album)
     {
-        $sql = 'DELETE FROM albums WHERE id=:id';
-        return DB::delete($sql, ['id' => $album]);
+        // Raw Query
+        /* $sql = 'DELETE FROM albums WHERE id=:id';
+        return DB::delete($sql, ['id' => $album]); */
+        return $this->destroy($album);
     }
 }

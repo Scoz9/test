@@ -27,7 +27,8 @@
             let ul_album_list = document.querySelector('#ul-album-list');
             let message = document.querySelector('div.alert-info');
             setTimeout(() => {
-                message.remove();
+                if(message)
+                    message.remove();
             }, 3000);
             ul_album_list.addEventListener("click", async function (evt) {
                 if (evt.target.classList.contains("btn-danger")) {
