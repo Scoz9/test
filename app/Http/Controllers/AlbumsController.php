@@ -13,7 +13,7 @@ class AlbumsController extends Controller
      */
     public function index(Request $request)
     {
-        //Query con segnaposti
+        //Query with signpost
         $sql = 'select * FROM albums WHERE 1 = 1';
         $where = [];
         if($request->has('id')) {
@@ -73,6 +73,11 @@ class AlbumsController extends Controller
         $data['id'] = $album->id;
         $sql = 'UPDATE albums set album_name=:album_name, description=:description where id=:id';
         $res = Db::update($sql, $data);
+        $message = 'Album ' . $album->id;
+        $message .= $res ? ' updated' : ' not updated';
+        session()->flash('message', $message);
+
+        return redirect()->route('albums.index');
     }
 
     /**

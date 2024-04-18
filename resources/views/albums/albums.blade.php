@@ -1,6 +1,9 @@
 @extends('templates.default')
 @section('content')
     <h1> Albums </h1>
+    @if(session()->has('message'))
+        <x-alert-info :message="session()->get('message')"/>
+    @endif
         <form>
             <input type="hidden" name="_token" id="_token" value="{{csrf_token()}}">
             <ul class="list-group" id="ul-album-list">
@@ -22,6 +25,10 @@
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             let ul_album_list = document.querySelector('#ul-album-list');
+            let message = document.querySelector('div.alert-info');
+            setTimeout(() => {
+                message.remove();
+            }, 3000);
             ul_album_list.addEventListener("click", async function (evt) {
                 if (evt.target.classList.contains("btn-danger")) {
                     evt.preventDefault();
