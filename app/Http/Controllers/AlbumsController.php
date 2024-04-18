@@ -16,15 +16,15 @@ class AlbumsController extends Controller
         //Query with signpost
         $sql = 'select * FROM albums WHERE 1 = 1';
         $where = [];
-        if($request->has('id')) {
+        if ($request->has('id')) {
             $where['id'] = $request->get('id');
             $sql .= " AND ID=:id";
         }
-        if($request->has('album_name')) {
+        if ($request->has('album_name')) {
             $where['album_name'] = $request->get('album_name');
             $sql .= " AND album_name=:album_name";
         }
-        $sql .= " LIMIT 5";
+        $sql .= " ORDER BY id DESC";
         $albums = DB::select($sql, $where);
         return view('albums.albums', ['albums' => $albums]);
     }
@@ -34,7 +34,7 @@ class AlbumsController extends Controller
      */
     public function create()
     {
-        //
+        return view('albums.createalbum');
     }
 
     /**
@@ -42,7 +42,16 @@ class AlbumsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->only(['album_name', 'description']);
+        $data['user_id'] = 1;
+        $data['album_thumb'] = '';
+        $query = 'INSERT INTO albums (album_name, description, user_id, album_thumb) values (:album_name, :description, :user_id, :album_thumb)';
+        $res = DB::insert($query, $data);
+        $message = 'Album ' . $data['album_name'];
+        $message .= $res ? ' created' : ' not created';
+        session()->flash('message', $message);
+
+        return redirect()->route('albums.index');
     }
 
     /**
@@ -61,7 +70,7 @@ class AlbumsController extends Controller
     {
         $sql = 'select * from albums where id=:id';
         $albumEdit = Db::select($sql, ['id' => $album->id]);
-        return view('albums.editalbum', ['album'=>$albumEdit[0]]);
+        return view('albums.editalbum', ['album' => $albumEdit[0]]);
     }
 
     /**
@@ -69,7 +78,7 @@ class AlbumsController extends Controller
      */
     public function update(Request $request, Album $album)
     {
-        $data = $request->only(['album_name','description']);
+        $data = $request->only(['album_name', 'description']);
         $data['id'] = $album->id;
         $sql = 'UPDATE albums set album_name=:album_name, description=:description where id=:id';
         $res = Db::update($sql, $data);
