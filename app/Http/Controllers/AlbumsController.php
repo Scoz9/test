@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\AlbumRequest;
 use App\Models\Album;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 
 class AlbumsController extends Controller
 {
@@ -32,6 +34,7 @@ class AlbumsController extends Controller
 
         //Query Builder
         $queryBuilder = DB::table('albums')->orderBy('id', 'DESC');
+        $queryBuilder->where('user_id', $request->user()->id);
         if ($request->has('id')) {
             $queryBuilder->where('id', '=', $request->input('id'));
         }
@@ -56,7 +59,7 @@ class AlbumsController extends Controller
     public function store(AlbumRequest $request)
     {
         $data = $request->only(['album_name', 'description']);
-        $data['user_id'] = 1;
+        $data['user_id'] = $request->user()->id;
         $data['album_thumb'] = '';
 
         // Raw Query
@@ -87,7 +90,10 @@ class AlbumsController extends Controller
         // return DB::select($sql, ['id' => $album]);
 
         // Eloquent Model
-        return $album;
+        if (+$album->user_id === Auth::id()) {
+            return $album;
+        }
+        abort(401);
     }
 
     /**
@@ -100,6 +106,12 @@ class AlbumsController extends Controller
         // $albumEdit = Db::select($sql, ['id' => $album->id]);
         // return view('albums.editalbum', ['album' => $albumEdit[0]]);
 
+        /* if($album->user_id === Auth::id()) {
+            return view('albums.editalbum', ['album' => $album]);
+        } */
+        if (Gate::denies('manage_album', $album)) {
+            abort(401);
+        }
         return view('albums.editalbum', ['album' => $album]);
     }
 
@@ -120,6 +132,11 @@ class AlbumsController extends Controller
 
         // Eloquent Model
         // $eloquent = Album::where('id', '=', $album->id)->update($data);
+
+        if (Gate::denies('manage_album', $album)) {
+            abort(401);
+        }
+
         $eloquent = $album->update($data);
 
         $message = 'Album ' . $album->id;
@@ -142,6 +159,11 @@ class AlbumsController extends Controller
 
         // Eloquent Model
         // Album::findOrFail($album)->delete();
+
+        if (Gate::denies('manage_album', $album)) {
+            abort(401);
+        }
+
         return Album::destroy($album);
     }
 
