@@ -13,7 +13,7 @@
             <textarea class='form-control' name='description' id='description' value="{{ old('description') }}"></textarea>
         </div>
         <div>
-            <button class="btn btn-primary"> Send </button>
+            <button type="submit" class="btn btn-primary"> Send </button>
         </div>
     </form>
 @endsection

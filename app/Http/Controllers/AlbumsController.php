@@ -11,6 +11,11 @@ use Illuminate\Support\Facades\Gate;
 
 class AlbumsController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(Album::class);
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -109,9 +114,6 @@ class AlbumsController extends Controller
         /* if($album->user_id === Auth::id()) {
             return view('albums.editalbum', ['album' => $album]);
         } */
-        if (Gate::denies('manage_album', $album)) {
-            abort(401);
-        }
         return view('albums.editalbum', ['album' => $album]);
     }
 
@@ -133,9 +135,6 @@ class AlbumsController extends Controller
         // Eloquent Model
         // $eloquent = Album::where('id', '=', $album->id)->update($data);
 
-        if (Gate::denies('manage_album', $album)) {
-            abort(401);
-        }
 
         $eloquent = $album->update($data);
 
@@ -160,9 +159,6 @@ class AlbumsController extends Controller
         // Eloquent Model
         // Album::findOrFail($album)->delete();
 
-        if (Gate::denies('manage_album', $album)) {
-            abort(401);
-        }
 
         return Album::destroy($album);
     }
