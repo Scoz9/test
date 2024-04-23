@@ -27,6 +27,8 @@ class AlbumsController extends Controller
         $sql .= " ORDER BY id DESC";
         $albums = DB::select($sql, $where);*/
 
+        $albPerPage = config('gallery.alb_per_page');
+
         //Query Builder
         $queryBuilder = DB::table('albums')->orderBy('id', 'DESC');
         if ($request->has('id')) {
@@ -35,7 +37,7 @@ class AlbumsController extends Controller
         if ($request->has('album_name')) {
             $queryBuilder->where('album_name', 'like', '%' . $request->input('album_name') . '%');
         }
-        $albums = $queryBuilder->get();
+        $albums = $queryBuilder->paginate($albPerPage);
         return view('albums.albums', ['albums' => $albums]);
     }
 
