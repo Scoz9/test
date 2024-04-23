@@ -31,12 +31,6 @@ Route::get('/dashboard', function () {
 Route::get('/albums', function () {
     return  Album::with('photos')->paginate(80);
 });
-*/
-Route::resource('/albums', AlbumsController::class);
-Route::delete('/albums/{album}', [AlbumsController::class, 'delete']);
-Route::get('/albums/{album}', [AlbumsController::class, 'show']);
-Route::get('/users', [AlbumsController::class, 'index']);
-/*
 Route::get('/users', function () {
     return  User::get();
 });
@@ -56,6 +50,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::resource('/albums', AlbumsController::class);
+    Route::delete('/albums/{album}', [AlbumsController::class, 'delete']);
+    Route::get('/albums/{album}', [AlbumsController::class, 'show']);
+    Route::get('/users', [AlbumsController::class, 'index']);
 });
 
 require __DIR__ . '/auth.php';
