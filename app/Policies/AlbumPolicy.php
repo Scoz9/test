@@ -13,7 +13,7 @@ class AlbumPolicy
      */
     public function viewAny(User $user)
     {
-        return 1;
+        return $user !== null;
     }
 
     /**
@@ -29,7 +29,7 @@ class AlbumPolicy
      */
     public function create(User $user)
     {
-        return 1;
+        return true;
     }
 
     /**

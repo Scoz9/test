@@ -13,6 +13,7 @@ class AlbumsController extends Controller
 {
     public function __construct()
     {
+        $this->middleware('auth');
         $this->authorizeResource(Album::class);
     }
 
@@ -159,8 +160,8 @@ class AlbumsController extends Controller
         // Eloquent Model
         // Album::findOrFail($album)->delete();
 
-
-        return Album::destroy($album);
+        $res = Album::destroy($album);
+        return redirect()->route('albums.index');
     }
 
     public function delete(int $album)

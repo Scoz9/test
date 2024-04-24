@@ -4,45 +4,50 @@
     @if (session()->has('message'))
         <x-alert-info :message="session()->get('message')" />
     @endif
-    <form>
-        <input type="hidden" name="_token" id="_token" value="{{ csrf_token() }}">
-        <ul class="list-group" id="ul-album-list">
-            @foreach ($albums as $album)
-                <li class="list-group-item d-flex justify-content-between">
-                    <p> {{ $album->album_name }}</p>
-                    <div>
-                        <a href="{{ route('albums.edit', $album->id) }}" class="btn btn-primary"> UPDATE </a>
-                        <a href="/albums/{{ $album->id }}" class="btn btn-danger"> DELETE </a>
-                    </div>
-                </li>
-            @endforeach
-            <li class="list-group-item">{{$albums->links()}}</li>
-        </ul>
-    </form>
-
+    <ul class="list-group" id="ul-album-list">
+        @foreach ($albums as $album)
+            <li class="list-group-item d-flex justify-content-between">
+                <p> {{ $album->album_name }}</p>
+                <div class="d-flex">
+                    <a href="{{ route('albums.edit', $album->id) }}" class="btn btn-primary"> UPDATE </a>
+                    <form id="delete-form" method="POST" action="albums/{{ $album->id }}" class="form-inline">
+                        @method('DELETE')
+                        @csrf
+                        <button class="btn btn-danger" id="{{ $album->id }}"> DELETE </button>
+                    </form>
+                </div>
+            </li>
+        @endforeach
+        <li class="list-group-item">{{ $albums->links() }}</li>
+    </ul>
 @endsection
 @section('footer')
     @parent
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            let ul_album_list = document.querySelector('#ul-album-list');
-            let message = document.querySelector('div.alert-info');
-            setTimeout(() => {
-                if (message)
-                    message.remove();
-            }, 3000);
-            ul_album_list.addEventListener("click", async function(evt) {
-                if (evt.target.classList.contains("btn-danger")) {
+            let form = document.querySelector('#delete-form');
+
+            if (form) {
+                let deleteBtn = document.querySelector('.btn-danger');
+                let message = document.querySelector('div.alert-info');
+                let url_album = form.action;
+
+                setTimeout(() => {
+                    if (message)
+                        message.remove();
+                }, 3000);
+                deleteBtn.addEventListener("submit", async function(evt) {
                     evt.preventDefault();
-                    let url_album = evt.target.getAttribute('href');
-                    let li = evt.target.parentNode.parentNode;
-                    let token = document.querySelector("#_token").value;
+                    let li = form.closest('li');
                     try {
                         const response = await fetch(url_album, {
-                            method: 'DELETE',
+                            type: "POST",
+                            data: {
+                                _method: 'DELETE',
+                            },
                             headers: {
                                 'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': token
+                                'X-CSRF-TOKEN': '{{ @csrf_token() }}'
                             }
                         });
                         if (!response.ok) {
@@ -58,8 +63,8 @@
                     } catch (error) {
                         console.log("Si e' verificato un errore: ", error);
                     }
-                }
-            })
+                });
+            }
         });
     </script>
 @endsection

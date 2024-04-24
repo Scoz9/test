@@ -16,8 +16,9 @@
             <textarea class='form-control' name='description' id='description'>{{ $album->description }}
             </textarea>
         </div>
-        <div>
-            <button class="btn btn-primary"> Invia </button>
+        <div class="d-flex justify-content-end border border-primary">
+            <a href="{{route('albums.index')}}" class="btn btn-success mx-1" > Back </a>
+            <button type="submit" class="btn btn-primary mx-1"> Submit </button>
         </div>
     </form>
 @endsection
