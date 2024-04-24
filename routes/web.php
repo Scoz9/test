@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AlbumsController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\ProfileController;
 use App\Models\Album;
@@ -63,5 +64,6 @@ Route::middleware('auth')->prefix('dashboard')->group(function () {
 Route::group(['prefix' => 'gallery'], function () {
     Route::get('albums', [GalleryController::class, 'index']);
 });
+Route::resource('categories', CategoryController::class);
 
 require __DIR__ . '/auth.php';
