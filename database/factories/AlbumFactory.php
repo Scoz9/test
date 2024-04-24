@@ -23,7 +23,7 @@ class AlbumFactory extends Factory
             'album_name' => $this->faker->text(60),
             'album_thumb' => $this->faker->image(),
             'description' => $this->faker->text(120),
-            'created_at' => $this->faker->dateTime(),
+            'created_at' => $this->faker->dateTime()->format('Y-m-d H:i:s'),
 
         ];
     }
