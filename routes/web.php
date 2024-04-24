@@ -1,11 +1,13 @@
 <?php
 
 use App\Http\Controllers\AlbumsController;
+use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\ProfileController;
 use App\Models\Album;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
+use Symfony\Component\CssSelector\Node\FunctionNode;
 
 /*
 |--------------------------------------------------------------------------
@@ -55,6 +57,11 @@ Route::middleware('auth')->prefix('dashboard')->group(function () {
     Route::resource('/albums', AlbumsController::class);
     Route::delete('/albums/{album}', [AlbumsController::class, 'delete']);
     Route::get('/users', [AlbumsController::class, 'index']);
+});
+
+// gallery
+Route::group(['prefix' => 'gallery'], function () {
+    Route::get('albums', [GalleryController::class, 'index']);
 });
 
 require __DIR__ . '/auth.php';
