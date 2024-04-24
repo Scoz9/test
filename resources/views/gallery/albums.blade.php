@@ -7,9 +7,14 @@
                     <div class="card-body">
                         <h5 class="card-title">{{ $album->album_name }}</h5>
                         <p class="card-text">{{ $album->album_description }}</p>
+                        <p class="card-text">
+                            @foreach ($album->categories as $cat)
+                                <a href="{{ route('gallery.categories.albums', $cat->id) }}"> {{ $cat->category_name }}</a>
+                            @endforeach
                     </div>
                 </div>
             </div>
         @endforeach
+        {{-- {{dd(DB::getQueryLog())}} --}}
     </div>
 @endsection

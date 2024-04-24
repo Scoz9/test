@@ -2,15 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Album;
+use App\Models\{Album, Category};
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class GalleryController extends Controller
 {
     public function index()
     {
-        $albums = Album::latest()->paginate(50);
-        // $albums = Album::with('categories')->get()->toArray();
-        return view('gallery.albums', ['albums' => $albums]);
+        // DB::enableQueryLog();
+        //$albums = Album::latest()->paginate(50);
+        //$albums = Album::with('categories')->get()->toArray();
+        $albums = Album::with('categories')->latest()->paginate(50);
+        return view('gallery.albums')->with('albums', $albums);
+    }
+
+    public function showCategoryAlbums(Category $category)
+    {
+        return view('gallery.albums')->with('albums', $category->albums()->with('categories')->latest()->paginate()); //tutti gli album di quella categoria
     }
 }
