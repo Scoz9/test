@@ -58,6 +58,7 @@ Route::middleware('auth')->prefix('dashboard')->group(function () {
     Route::resource('/albums', AlbumsController::class);
     Route::delete('/albums/{album}', [AlbumsController::class, 'delete']);
     Route::get('/users', [AlbumsController::class, 'index']);
+    Route::resource('categories', CategoryController::class);
 });
 
 // gallery
