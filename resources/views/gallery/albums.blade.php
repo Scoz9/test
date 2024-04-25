@@ -9,7 +9,12 @@
                         <p class="card-text">{{ $album->album_description }}</p>
                         <p class="card-text">
                             @foreach ($album->categories as $cat)
-                                <a href="{{ route('gallery.categories.albums', $cat->id) }}"> {{ $cat->category_name }}</a>
+                                @if ($cat->id !== $category_id)
+                                    <a class="link-primary" href="{{ route('gallery.categories.albums', $cat->id) }}">
+                                        {{ $cat->category_name }}</a>
+                                @else
+                                    {{ $cat->category_name }}
+                                @endif
                             @endforeach
                     </div>
                 </div>

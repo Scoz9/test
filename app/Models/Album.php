@@ -18,6 +18,6 @@ class Album extends Model
     public function categories()
     {
         // album_category, album_id, category_id
-        return $this->belongsToMany(Category::class); //Un album puo' appartenere a tante categorie
+        return $this->belongsToMany(Category::class)->withTimestamps(); //Un album puo' appartenere a tante categorie
     }
 }

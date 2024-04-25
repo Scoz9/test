@@ -11,6 +11,6 @@ class Category extends Model
 
     public function albums()
     {
-        return $this->belongsToMany(Album::class); //Una categoria puo' appartenere a tanti album
+        return $this->belongsToMany(Album::class)->withTimestamps(); //Una categoria puo' appartenere a tanti album
     }
 }

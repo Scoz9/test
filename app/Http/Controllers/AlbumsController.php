@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AlbumRequest;
 use App\Models\Album;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -56,7 +57,10 @@ class AlbumsController extends Controller
      */
     public function create()
     {
-        return view('albums.createalbum');
+        $album = new Album();
+        $category = Category::orderBy('category_name')->get();
+
+        return view('albums.createalbum', ['album' => $album, 'categories' => $category]);
     }
 
     /**
@@ -64,9 +68,12 @@ class AlbumsController extends Controller
      */
     public function store(AlbumRequest $request)
     {
-        $data = $request->only(['album_name', 'description']);
-        $data['user_id'] = $request->user()->id;
-        $data['album_thumb'] = '';
+        $album = new Album();
+        $album->album_name = request()->input('album_name');
+        $album->album_thumb = '/';
+        $album->description = request()->input('description');
+        $album->user_id = Auth::id();
+        $res = $album->save();
 
         // Raw Query
         /* $query = 'INSERT INTO albums (album_name, description, user_id, album_thumb) values (:album_name, :description, :user_id, :album_thumb)';
@@ -77,10 +84,15 @@ class AlbumsController extends Controller
 
         // Eloquent Model
         // $eloquent = Album::insert($data);
-        $eloquent = Album::create($data);
+        // $eloquent = Album::create($data);
+        if ($res) {
+            if ($request->has('categories')) {
+                $album->categories()->attach($request->input('categories'));
+            }
+        }
 
-        $message = 'Album ' . $data['album_name'];
-        $message .= $eloquent ? ' created' : ' not created';
+        $message = 'Album ' . $album->album_name;
+        $message .= $res ? ' created' : ' not created';
         session()->flash('message', $message);
 
         return redirect()->route('albums.index');
