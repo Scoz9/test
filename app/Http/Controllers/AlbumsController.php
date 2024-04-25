@@ -40,7 +40,7 @@ class AlbumsController extends Controller
         $albPerPage = config('gallery.alb_per_page');
 
         //Query Builder
-        $queryBuilder = DB::table('albums')->orderBy('id', 'DESC');
+        $queryBuilder = Album::orderBy('id', 'DESC');
         $queryBuilder->where('user_id', $request->user()->id);
         if ($request->has('id')) {
             $queryBuilder->where('id', '=', $request->input('id'));
@@ -48,6 +48,10 @@ class AlbumsController extends Controller
         if ($request->has('album_name')) {
             $queryBuilder->where('album_name', 'like', '%' . $request->input('album_name') . '%');
         }
+        if ($request->has('category_id')) {
+            $queryBuilder->whereHas('categories', fn ($q) => $q->where('category_id', $request->category_id));
+        }
+
         $albums = $queryBuilder->paginate($albPerPage);
         return view('albums.albums', ['albums' => $albums]);
     }
@@ -58,9 +62,10 @@ class AlbumsController extends Controller
     public function create()
     {
         $album = new Album();
+        $selectedCategories = [];
         $category = Category::orderBy('category_name')->get();
 
-        return view('albums.createalbum', ['album' => $album, 'categories' => $category]);
+        return view('albums.createalbum', ['album' => $album, 'categories' => $category, 'selectedCategories' => $selectedCategories]);
     }
 
     /**
@@ -127,7 +132,9 @@ class AlbumsController extends Controller
         /* if($album->user_id === Auth::id()) {
             return view('albums.editalbum', ['album' => $album]);
         } */
-        return view('albums.editalbum', ['album' => $album]);
+        $category = Category::orderBy('category_name')->get();
+        $selectedCategories = $album->categories()->get()->pluck('id')->toArray();
+        return view('albums.editalbum', ['album' => $album, 'categories' => $category, 'selectedCategories' => $selectedCategories]);
     }
 
     /**
@@ -135,7 +142,9 @@ class AlbumsController extends Controller
      */
     public function update(AlbumRequest $request, Album $album)
     {
-        $data = $request->only(['album_name', 'description']);
+        $album->album_name = $request->input('album_name');
+        $album->description = $request->input('description');
+        $album->user_id = Auth::id();
 
         //Raw Query
         /* $data['id'] = $album->id;
@@ -147,10 +156,14 @@ class AlbumsController extends Controller
 
         // Eloquent Model
         // $eloquent = Album::where('id', '=', $album->id)->update($data);
+        // $eloquent = $album->update($data);
 
-
-        $eloquent = $album->update($data);
-
+        $res = $album->save();
+        if ($res) {
+            if ($request->has('categories')) {
+                $album->categories()->sync($request->input('categories'));
+            }
+        }
         $message = 'Album ' . $album->id;
         $message .= $album ? ' updated' : ' not updated';
         session()->flash('message', $message);

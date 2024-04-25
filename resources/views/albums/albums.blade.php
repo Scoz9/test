@@ -8,6 +8,15 @@
         @foreach ($albums as $album)
             <li class="list-group-item d-flex justify-content-between">
                 <p> {{ $album->album_name }}</p>
+                @if ($album->categories->count())
+                    <ul>
+                        @foreach ($album->categories as $cat)
+                            <li>{{ $cat->category_name }}</li>
+                        @endforeach
+                    </ul>
+                @else
+                    No categories
+                @endif
                 <div class="d-flex">
                     <a href="{{ route('albums.edit', $album->id) }}" class="btn btn-primary"> UPDATE </a>
                     <form id="delete-form" method="POST" action="albums/{{ $album->id }}" class="form-inline">
