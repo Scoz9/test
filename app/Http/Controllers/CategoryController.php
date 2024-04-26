@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
 use App\Models\Category;
+use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
@@ -14,7 +15,8 @@ class CategoryController extends Controller
     public function index()
     {
         $categories = Category::orderBy('category_name')->withCount('albums')->paginate(10);
-        return view('categories.index', compact('categories'));
+        $category = new Category();
+        return view('categories.index', compact('categories', 'category'));
     }
 
     /**
@@ -22,7 +24,8 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        //
+        $category = new Category();
+        return view('categories.create', ['category' => $category]);
     }
 
     /**
@@ -30,7 +33,20 @@ class CategoryController extends Controller
      */
     public function store(StoreCategoryRequest $request)
     {
-        //
+        $res = Category::create([
+            'category_name' => $request->category_name
+        ]);
+
+        $message = $res ? 'Category created' : 'Problem creating category';
+        session()->flash('messages', $message);
+
+        if ($request->ajax()) {
+            return [
+                'message' => $message,
+                'success' => $res
+            ];
+        }
+        return redirect()->route('categories.index');
     }
 
     /**
@@ -46,7 +62,7 @@ class CategoryController extends Controller
      */
     public function edit(Category $category)
     {
-        //
+        return view('categories.create', ['category' => $category]);
     }
 
     /**
@@ -54,14 +70,37 @@ class CategoryController extends Controller
      */
     public function update(UpdateCategoryRequest $request, Category $category)
     {
-        //
+        $category->category_name = $request->category_name;
+        $res = $category->save();
+
+        $message = $res ? 'Category created' : 'Problem creating category';
+        session()->flash('messages', $message);
+
+        if ($request->ajax()) {
+            return [
+                'message' => $message,
+                'success' => $res
+            ];
+        }
+        return redirect()->route('categories.index');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Category $category)
+    public function destroy(Category $category, Request $request)
     {
-        //
+        $res = $category->delete();
+
+        $message = $res ? 'Category deleted' : 'Problem deleting category';
+        session()->flash('messages', $message);
+
+        if ($request->ajax()) {
+            return [
+                'message' => $message,
+                'success' => $res
+            ];
+        }
+        return redirect()->route('categories.index');
     }
 }
