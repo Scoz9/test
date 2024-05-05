@@ -37,7 +37,7 @@
             let form = document.querySelector('#delete-form');
 
             if (form) {
-                let deleteBtn = document.querySelector('.btn-danger');
+                let deleteBtn = document.querySelector('form button.btn-danger');
                 let message = document.querySelector('div.alert-info');
                 let url_album = form.action;
 

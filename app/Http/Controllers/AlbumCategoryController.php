@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreAlbumCategoryRequest;
 use App\Http\Requests\UpdateAlbumCategoryRequest;
 use App\Models\AlbumCategory;
+use Illuminate\Http\Request;
 
 class AlbumCategoryController extends Controller
 {
@@ -59,8 +60,16 @@ class AlbumCategoryController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(AlbumCategory $albumCategory)
+    public function destroy(AlbumCategory $albumCategory, Request $req)
     {
-        //
+        $res = $albumCategory->delete();
+        if ($req->expectsJson()) {
+            return [
+                'message' => $res ? "Category deleted" : "Could not delete category",
+                'success' => (bool) $res
+            ];
+        } else {
+            return redirect()->route('categories.index');
+        }
     }
 }
